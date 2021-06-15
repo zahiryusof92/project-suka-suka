@@ -6,7 +6,7 @@
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <style>
         #map {
-            height: 70%;
+            height: 80%;
         }
 
         html,
@@ -104,22 +104,22 @@
     <label>Last update, <span id="last-update"></span>, Choose a state:</label>
 
     <select id="states">
-        <option value="kl">Federal Territory of Kuala Lumpur</option>
-        <option value="perlis">Perlis</option>
-        <option value="sabah">Sabah</option>
-        <option value="putrajaya">Federal Territory of Putrajaya</option>
-        <option value="kedah">Kedah</option>
-        <option value="sarawak">Sarawak</option>
-        <option value="penang">Penang</option>
         <option value="johor">Johor</option>
+        <option value="kedah">Kedah</option>
         <option value="kelantan">Kelantan</option>
         <option value="melaka">Melaka</option>
         <option value="negeri-sembilan">Negeri Sembilan</option>
         <option value="pahang">Pahang</option>
+        <option value="penang">Penang</option>
         <option value="perak">Perak</option>
+        <option value="perlis">Perlis</option>
+        <option value="sabah">Sabah</option>
+        <option value="sarawak">Sarawak</option>
         <option value="selangor">Selangor</option>
         <option value="terengganu">Terengganu</option>
-        <option value="labuan">Labuan</option>
+        <option value="kl">Federal Territory of Kuala Lumpur</option>
+        <option value="labuan">Federal Territory of Labuan</option> 
+        <option value="putrajaya">Federal Territory of Putrajaya</option>        
     </select>
     <br></br>
 
@@ -328,7 +328,7 @@
     <input id="pac-input" class="controls" type="text" placeholder="Search Address" />
     <div id="map"></div>
     <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAx8LOUggSd1YKjYwVjiAUOvf5AkNXeW9Y&callback=initMap&libraries=places&v=weekly"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeGfgkYwCzlJ845v9nRdReWSxfzkp73D4&callback=initMap&libraries=&v=weekly"
         async></script>
 </body>
 
