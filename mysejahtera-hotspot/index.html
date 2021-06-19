@@ -96,6 +96,13 @@
         Google Map will take a few seconds to load the data, wait ya. Click on any circles to get address and total
         active case in 1km radius.
     </p>
+    <p>Google Map will take a few seconds to load the data, wait ya. Click on any polygons to get average case and total
+        resolution points covered.</p>
+    <p>Blue color covered 0%-33% percentile of active case in Malaysia, Yellow color covered 33.1%-66% percentile of
+        active case in Malaysia, Red color covered 66.1%-100% percentile of active case in each state. Minimum 3
+        resolution points to assumed 1 cluster.</p>
+    <p>Give Husein a break, he knows this website is ugly. Please open this website on desktop / laptop browser if you
+        do not see any data.</p>
 
     <form>
         <label>Select your state:</label>
@@ -121,7 +128,29 @@
 
     <br />
 
-    <div id="map"></div>
+    <select id="states">
+        <option value="kl">Federal Territory of Kuala Lumpur</option>
+        <option value="selangor">Selangor</option>
+        <option value="kedah">Kedah</option>
+        <option value="penang">Penang</option>
+        <option value="sabah">Sabah</option>
+        <option value="sarawak">Sarawak</option>
+        <option value="johor">Johor</option>
+        <option value="kelantan">Kelantan</option>
+        <option value="melaka">Melaka</option>
+        <option value="negeri-sembilan">Negeri Sembilan</option>
+        <option value="pahang">Pahang</option>
+        <option value="perak">Perak</option>
+        <option value="terengganu">Terengganu</option>
+        <!-- <option value="perlis">Perlis</option>
+        
+        <option value="putrajaya">Federal Territory of Putrajaya</option>
+        
+        
+        
+        <option value="labuan">Labuan</option> -->
+    </select>
+    <br></br>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -133,7 +162,7 @@
             initMap();
         });
 
-        $.ajax("https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/last-update.json", {
+        $.ajax("https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-density/last-update.json", {
             dataType: 'json',
             timeout: 5000,
             success: function (data, status, xhr) {
@@ -182,46 +211,114 @@
             'labuan': [5.314517, 115.221615]
         }
 
-        var data = {
-            'kl': 'data/Federal%20Territory%20of%20Kuala%20Lumpur-points.json-points-cases.json',
-            'perlis': 'data/Perlis-points.json-points-cases.json',
-            'sabah': 'data/Sabah-points.json-points-cases.json',
-            'putrajaya': 'data/Federal%20Territory%20of%20Putrajaya-points.json-points-cases.json',
-            'kedah': 'data/Kedah-points.json-points-cases.json',
-            'sarawak': 'data/Sarawak-points.json-points-cases.json',
-            'penang': 'data/Penang-points.json-points-cases.json',
-            'johor': 'data/Johor-points.json-points-cases.json',
-            'kelantan': 'data/Kelantan-points.json-points-cases.json',
-            'melaka': 'data/Melaka-points.json-points-cases.json',
-            'negeri-sembilan': 'data/Negeri%20Sembilan-points.json-points-cases.json',
-            'pahang': 'data/Pahang-points.json-points-cases.json',
-            'perak': 'data/Perak-points.json-points-cases.json',
-            'selangor': 'data/selangor-points.json-points-cases.json',
-            'terengganu': 'data/Terengganu-points.json-points-cases.json',
-            'labuan': 'data/Labuan-points.json-points-cases.json'
+        data = {
+            'kl': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/kl.json',
+            'selangor': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/selangor.json',
+            'kedah': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/kedah.json',
+            'penang': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/penang.json',
+            'sabah': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/sabah.json',
+            'sarawak': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/sarawak.json',
+            'johor': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/johor.json',
+            'kelantan': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/kelantan.json',
+            'melaka': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/melaka.json',
+            'negeri-sembilan': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/negeri-sembilan.json',
+            'pahang': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/pahang.json',
+            'perak': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/perak.json',
+            'terengganu': 'https://raw.githubusercontent.com/huseinzol05/project-suka-suka/main/mysejahtera-hotspot/data/terengganu.json'
         }
 
         function initMap() {
-            var state = $("#states").val();
-            var map = new google.maps.Map(document.getElementById("map"), {
-                center: {
-                    lat: center[state][0],
-                    lng: center[state][1],
-                },
-                zoom: zoom[state],
+
+            let map;
+            polygons = [];
+            map = new google.maps.Map(document.getElementById("map"), {});
+            const input = document.getElementById("pac-input");
+            const searchBox = new google.maps.places.SearchBox(input);
+            map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+            map.addListener("bounds_changed", () => {
+                searchBox.setBounds(map.getBounds());
             });
-            function setMouseOverEvent(circle) {
-                google.maps.event.addListener(circle, 'mouseover', function () {
-                    this.setOptions({
-                        fillColor: "#000",
-                    });
+            searchBox.addListener("places_changed", () => {
+                const places = searchBox.getPlaces();
+
+                if (places.length == 0) {
+                    return;
+                }
+                const bounds = new google.maps.LatLngBounds();
+                places.forEach((place) => {
+                    if (!place.geometry || !place.geometry.location) {
+                        alert("Returned place contains no geometry");
+                        return;
+                    }
+
+                    if (place.geometry.viewport) {
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
                 });
-                google.maps.event.addListener(circle, 'mouseout', function () {
-                    this.setOptions({
-                        fillColor: "#FF0000",
-                    });
+                map.fitBounds(bounds);
+            });
+
+            function init() {
+
+                polygons.forEach((polygon) => {
+                    polygon.setMap(null);
                 });
-            }
+                polygons = [];
+
+                s = $("#states").val()
+                map.setZoom(zoom[s]);
+                map.setCenter(new google.maps.LatLng(center[s][0], center[s][1]))
+
+                var infoWin = new google.maps.InfoWindow();
+
+                function makeClickable(polygon) {
+                    google.maps.event.addListener(polygon, "click", function () {
+                        console.log(polygon);
+                        case_string = 'Average case: ' + polygon.case.toString() + '<br>'
+                        resolution_string = 'Total resolution points: ' + polygon.total.toString()
+                        infoWin.setPosition(polygon.center);
+                        infoWin.setContent(case_string + resolution_string);
+                        infoWin.open(map);
+                    });
+                }
+
+                $.ajax(data[s], {
+                    dataType: 'json',
+                    timeout: 5000,
+                    success: function (data, status, xhr) {
+
+
+                        for (var key in data) {
+                            for (var i = 0; i < data[key]['polygons'].length; i++) {
+                                var total_lat = 0;
+                                var total_lng = 0
+                                for (var k = 0; k < data[key]['polygons'][i].length; k++) {
+                                    total_lat += data[key]['polygons'][i][k]['lat'];
+                                    total_lng += data[key]['polygons'][i][k]['lng'];
+                                }
+                                var center_lat = total_lat / data[key]['polygons'][i].length;
+                                var center_lng = total_lng / data[key]['polygons'][i].length;
+
+                                if (center_lat.toFixed(6) == data[key]['polygons'][i][0]['lat'].toFixed(6) | center_lng.toFixed(6) == data[key]['polygons'][i][0]['lng'].toFixed(6)) continue;
+                                const polygon = new google.maps.Polygon({
+                                    paths: data[key]['polygons'][i],
+                                    strokeColor: data[key]['color'],
+                                    strokeOpacity: 0.8,
+                                    strokeWeight: 2,
+                                    fillColor: data[key]['color'],
+                                    fillOpacity: 0.35,
+                                    case: data[key]['data'][0][i],
+                                    total: data[key]['data'][1][i],
+                                    center: new google.maps.LatLng(center_lat, center_lng),
+                                    polys: data[key]['polygons'][i],
+                                    centers: [center_lat, center_lng]
+                                });
+                                polygon.setMap(map);
+                                makeClickable(polygon);
+                                polygons.push(polygon);
+                            }
 
             function makeClickable(circle) {
                 google.maps.event.addListener(circle, "click", function () {
